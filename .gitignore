@@ -1,3 +1,7 @@
+# Stanford NER
+english.all.3class.distsim.crf.ser.gz
+stanford-ner.jar
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
