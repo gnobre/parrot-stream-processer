@@ -5,6 +5,7 @@ from elasticsearch import Elasticsearch
 from kafka import KafkaConsumer
 from nlp.NERTagger import NERTagger
 from nlp.SentimentAnalyzer import SentimentAnalyzer
+from nlp.NgramExtractor import NgramExtractor
 
 
 def format_tweet(tweet_dict):
@@ -34,12 +35,14 @@ if __name__ == '__main__':
     consumer = KafkaConsumer(options.kafka_topic)
     named_entity_recognition = NERTagger('english.all.3class.distsim.crf.ser.gz', 'stanford-ner.jar')
     sentiment_analysis = SentimentAnalyzer()
+    ngram_extractor = NgramExtractor()
 
     for msg in consumer:
         tweet = json.loads(msg.value.decode("utf-8"))
         tweet = format_tweet(tweet)
         tweet.update(sentiment_analysis.execute(tweet["text"]))
         tweet.update(named_entity_recognition.execute(tweet["text"]))
+        tweet.update(ngram_extractor.execute(tweet["text"]))
         res = es.index(index=options.es_index,
                        doc_type=options.es_doc,
                        id=tweet["id"],
